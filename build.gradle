@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    //compile 'xpp3:xpp3:1.1.4c'
+    //compile project(':smack-core')
+    //compile project(':smack-tcp')
+}

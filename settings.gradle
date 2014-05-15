@@ -1,0 +1,7 @@
+rootProject.name = 'smack-example'
+include ':smack-tcp',
+        ':smack-core'
+
+project(':smack-tcp').projectDir = new File('submodules/smack/smack-tcp')
+project(':smack-core').projectDir = new File('submodules/smack/smack-core')
+

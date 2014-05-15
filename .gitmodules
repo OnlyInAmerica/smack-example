@@ -1,0 +1,3 @@
+[submodule "submodules/smack"]
+	path = submodules/smack
+	url = git@github.com:Flowdalic/Smack.git
