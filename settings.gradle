@@ -1,6 +1,15 @@
-rootProject.name = 'smack-example'
-include ':smack-tcp',
-        ':smack-core'
+include 'smack-example',
+		'smack-core',
+        'smack-tcp'
+//        'smack-extensions',
+//        'smack-experimental',
+//        'smack-debug',
+//        'smack-resolver-dnsjava',
+//        'smack-resolver-javax',
+//        'smack-compression-jzlib',
+//        'smack-legacy',
+//        'smack-jingle',
+//        'smack-bosh'
 
 project(':smack-tcp').projectDir = new File('submodules/smack/smack-tcp')
 project(':smack-core').projectDir = new File('submodules/smack/smack-core')

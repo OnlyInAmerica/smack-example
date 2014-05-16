@@ -2,12 +2,12 @@ package pro.dbro.smack;
 
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.XMPPTCPConnection;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 
 import java.io.IOException;
 
 /**
- * Created by davidbrodsky on 5/7/14.
+ * A simple test of the Smack library
  */
 public class Client {
 

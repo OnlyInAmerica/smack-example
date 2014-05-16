@@ -2,8 +2,12 @@
 *.iml
 .idea/
 
-# Gradle
+# Gradle Cache
 .gradle/
+
+# Gradle build files
+smack-example/build
+
 
 # Mac OS X
 .DS_Store
