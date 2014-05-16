@@ -7,7 +7,7 @@
 
 # Gradle build files
 smack-example/build
-
+build/
 
 # Mac OS X
 .DS_Store
