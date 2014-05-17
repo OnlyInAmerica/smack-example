@@ -14,3 +14,14 @@ include 'smack-example',
 project(':smack-tcp').projectDir = new File('submodules/smack/smack-tcp')
 project(':smack-core').projectDir = new File('submodules/smack/smack-core')
 
+//project(':smack-extensions').projectDir = new File('submodules/smack/smack-extensions')
+//project(':smack-experimental').projectDir = new File('submodules/smack/smack-experimental')
+//project(':smack-debug').projectDir = new File('submodules/smack/smack-debug')
+//project(':smack-resolver-dnsjava').projectDir = new File('submodules/smack/smack-resolver-dnsjava')
+//project(':smack-resolver-javax').projectDir = new File('submodules/smack/smack-resolver-javax')
+//project(':smack-compression-jzlib').projectDir = new File('submodules/smack/smack-compression-jzlib')
+//project(':smack-legacy').projectDir = new File('submodules/smack/smack-legacy')
+//project(':smack-jingle').projectDir = new File('submodules/smack/smack-jingle')
+//project(':smack-bosh').projectDir = new File('submodules/smack/smack-bosh')
+
+

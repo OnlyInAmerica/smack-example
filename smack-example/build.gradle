@@ -1,7 +1,16 @@
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
 version = '1.0'
 
 dependencies {
     compile project(':smack-tcp')
     compile project(':smack-core')
+//    compile project(':smack-bosh')
+//    compile project(':smack-compression-jzlib')
+//    compile project(':smack-debug')
+//    compile project(':smack-experimental')
+//    compile project(':smack-extensions')
+//    compile project(':smack-jingle')
+//    compile project(':smack-legacy')
+//    compile project(':smack-resolver-dnsjava')
+//    compile project(':smack-resolver-javax')
 }

@@ -8,6 +8,10 @@
 # Gradle build files
 smack-example/build
 build/
+out/
 
 # Mac OS X
 .DS_Store
+
+# Secrets
+smack-example/src/main/java/pro/dbro/smack/SECRETS.java
