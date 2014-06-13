@@ -98,6 +98,8 @@ public class LLXMPPClient {
             }
         });
         if (VERBOSE) System.out.println("Broadcasting XEP-0174 presence " + serviceName);
+        if (VERBOSE) System.out.println("Waiting for other clients...");
+
 
         mState = STATE.PRESENT;
     }

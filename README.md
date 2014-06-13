@@ -42,3 +42,7 @@ Without modification this application will broadcast an XEP-0174 presence on the
 ```
 ./gradlew run
 ```
+
+## Open with IntelliJ
+
+To edit the project, simply "Import Project" and point to the root project directory.
