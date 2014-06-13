@@ -85,7 +85,7 @@ public class LLXMPPClient {
             public void presenceNew(LLPresence presence) {
                 System.out.println("new presence! " + presence.getServiceName());
                 try {
-                    mService.getChat(presence.getServiceName()).sendMessage("Hey man!");
+                    mService.getChat(presence.getServiceName()).sendMessage("Hey!");
                 } catch (XMPPException | IOException | SmackException e) {
                     e.printStackTrace();
                     System.out.println("Error sending chat!");
