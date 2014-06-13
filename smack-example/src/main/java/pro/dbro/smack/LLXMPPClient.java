@@ -97,6 +97,7 @@ public class LLXMPPClient {
                 System.out.println("removed presence! " + presence);
             }
         });
+        if (VERBOSE) System.out.println("Broadcasting XEP-0174 presence " + serviceName);
 
         mState = STATE.PRESENT;
     }
