@@ -2,5 +2,10 @@ allprojects {
     apply plugin: 'java'
     repositories {
         mavenCentral()
+
+        // Add OSS Sonatype Snapshot repository
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
     }
 }

@@ -1,6 +1,8 @@
 include 'smack-example',
 		'smack-core',
-        'smack-tcp'
+        'smack-tcp',
+        'smack-serverless',
+        'smack-extensions'
 //        'smack-extensions',
 //        'smack-experimental',
 //        'smack-debug',
@@ -11,8 +13,10 @@ include 'smack-example',
 //        'smack-jingle',
 //        'smack-bosh'
 
-project(':smack-tcp').projectDir = new File('submodules/smack/smack-tcp')
 project(':smack-core').projectDir = new File('submodules/smack/smack-core')
+project(':smack-tcp').projectDir = new File('submodules/smack/smack-tcp')
+project(':smack-serverless').projectDir = new File('submodules/smack/smack-serverless')
+project(':smack-extensions').projectDir = new File('submodules/smack/smack-extensions')
 
 //project(':smack-extensions').projectDir = new File('submodules/smack/smack-extensions')
 //project(':smack-experimental').projectDir = new File('submodules/smack/smack-experimental')

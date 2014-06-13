@@ -1,9 +1,13 @@
+apply plugin:'application'
+mainClassName = "pro.dbro.smack.Main"
+
 sourceCompatibility = 1.7
 version = '1.0'
 
 dependencies {
     compile project(':smack-tcp')
     compile project(':smack-core')
+    compile project(':smack-serverless')
 //    compile project(':smack-bosh')
 //    compile project(':smack-compression-jzlib')
 //    compile project(':smack-debug')
