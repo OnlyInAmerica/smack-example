@@ -7,7 +7,7 @@ This should make testing Smack development easier!
 
 ## SECRETS.java
 
-This file contains XMPP account data that is kept out of source control. To run this application you must first create a SECRETS.java file that includes your XMPP credentials.
+This file contains XMPP account data that is kept out of source control. To run the XMPP server portion of this application you must first create a SECRETS.java file that includes your XMPP credentials. This is not required for XEP-0174 testing.
 
 From the project root directory, create SECRETS.java:
 
@@ -29,7 +29,7 @@ public class SECRETS {
     public static final String XMPP_USER        = "username@gmail.com";
     public static final String XMPP_PASS        = "password";
 
-    public static final String XMPP_RECIPIENT    = "afriend@somewhere.com";
+    public static final String XMPP_RECIPIENT   = "afriend@somewhere.com";
 }
 
 
@@ -46,3 +46,36 @@ Without modification this application will broadcast an XEP-0174 presence on the
 ## Open with IntelliJ
 
 To edit the project, simply "Import Project" and point to the root project directory.
+
+## Debugging mDNS
+
+A source of client incompatibility is mDNS presence broadcasting and resolution. Below are techniques I've used to diagnose these conditions:
+
+To browse (and automatically attempt to resolve, if supported) all mDNS XEP-0174 clients on your local network:
+
+### JmDNS (all platforms)
+
+JmDNS is the mDNS library used by this project. An executable JmDNS 3.4.1 .jar is included in `./tools` which is useful for debugging XEP-0174 client compatibility:
+
+To browse and automatically attempt to resolve all XEP-0174 clients on your local network:
+
+```
+$ java -jar jmdns-3.4.1.jar -bs _presence._tcp local.
+```
+
+### dns-sd (Mac OS X)
+
+To browse all services:
+
+```
+$ dns-sd -B _presence._tcp local
+```
+
+### avi-hi (Ubuntu)
+
+To browse and automatically attempt to resolve all XEP-0174 clients on your local network:
+
+```
+$ avahi-browse _presence._tcp -r
+```
+

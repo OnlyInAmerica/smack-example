@@ -1,13 +1,12 @@
 package pro.dbro.smack;
 
 import org.jivesoftware.smack.*;
-import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.tcp.*;
-import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
-import javax.jmdns.JmDNS;
+import javax.jmdns.impl.JmDNSImpl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,7 +42,7 @@ public class LLXMPPClient {
     private JmDNSService mService;
 
     /**
-     * Create a test XMPP Client over TCP
+     * Create a test XEP-0174 XMPP client
      */
     public LLXMPPClient() {
         init();
@@ -60,18 +59,21 @@ public class LLXMPPClient {
     /**
      * Broadcast to XEP-0174 clients with the given service name
      *
-     * @param serviceName The name of the XEP-0174 service to broadcast as. e.g "david@whatever.com"
-     * @throws IOException
-     * @throws XMPPException
-     * @throws SmackException
+     * @param fullJid            The full JID to use. e.g "david@whatever.com"
+     * @param logNetworkActivity Whether to print network events to the console.
+     * @throws java.net.UnknownHostException
+     * @throws org.jivesoftware.smack.XMPPException
      */
-    public void broadcastPresenceAs(String serviceName) throws XMPPException, UnknownHostException {
+    public void broadcastPresenceAs(final String fullJid, boolean logNetworkActivity) throws XMPPException, UnknownHostException {
         if (mState != STATE.INITIALIZED) throw new IllegalStateException();
 
+        if(!fullJid.contains("@") || !fullJid.split("@")[1].contains(".")) throw new IllegalArgumentException("Invalid jid. Must be of form username@domain.com");
+
+        // Jid of "example@test.com" becomes mDNS Service Name "example@test"
+        String serviceName = fullJid.substring(0, fullJid.lastIndexOf("."));
         LLPresence presence = new LLPresence(serviceName);
-        presence.setJID(serviceName);
+        presence.setJID(fullJid);
         presence.setServiceName(serviceName);
-        presence.setJID(serviceName);
         if (serviceName.contains("@")) {
             presence.setNick(serviceName.split("@")[0]);
         }
@@ -79,16 +81,123 @@ public class LLXMPPClient {
         InetAddress localAddress = InetAddress.getLocalHost();
         mService = (JmDNSService) JmDNSService.create(presence, localAddress);
         LLServiceDiscoveryManager disco = LLServiceDiscoveryManager.getInstanceFor(mService);
+        if (logNetworkActivity) {
+            attachNetworkActivityLoggers();
+        }
         mService.init();
+        if (VERBOSE) System.out.println("Broadcasting XEP-0174 presence " + serviceName);
+
+        mState = STATE.PRESENT;
+    }
+
+    /**
+     * Log all network events. Must be called after {@link #broadcastPresenceAs(String, boolean)}
+     */
+    private void attachNetworkActivityLoggers() {
+        if (mState != STATE.INITIALIZED) throw new IllegalStateException();
+
+        JmDNSService.addLLServiceListener(new LLServiceListener() {
+            @Override
+            public void serviceCreated(LLService service) {
+                System.out.println("JmDNS Service created " + service.getLocalPresence().getServiceName());
+            }
+        });
+
         mService.addPresenceListener(new LLPresenceListener() {
             @Override
             public void presenceNew(LLPresence presence) {
                 System.out.println("new presence! " + presence.getServiceName());
-                try {
-                    mService.getChat(presence.getServiceName()).sendMessage("Hey!");
-                } catch (XMPPException | IOException | SmackException e) {
-                    e.printStackTrace();
-                    System.out.println("Error sending chat!");
+            }
+
+            @Override
+            public void presenceRemove(LLPresence presence) {
+
+            }
+        });
+
+        mService.addLLChatListener(new LLChatListener() {
+            @Override
+            public void newChat(LLChat chat) {
+                System.out.println("New chat with " + chat.getServiceName());
+            }
+
+            @Override
+            public void chatInvalidated(LLChat chat) {
+                System.out.println("Chat invalidated with " + chat.getServiceName());
+            }
+        });
+
+        mService.addServiceStateListener(new LLServiceStateListener() {
+            @Override
+            public void serviceNameChanged(String newName, String oldName) {
+                System.out.println("Service name changed. " + oldName + " changed to " + newName);
+            }
+
+            @Override
+            public void serviceClosed() {
+                System.out.println("Service closed");
+            }
+
+            @Override
+            public void serviceClosedOnError(Exception e) {
+                System.out.println("Service closed with Error");
+                e.printStackTrace();
+            }
+
+            @Override
+            public void unknownOriginMessage(Message e) {
+                System.out.println("Unknown origin message " + e.getBody());
+            }
+        });
+
+        mService.addLLServiceConnectionListener(new LLServiceConnectionListener() {
+            @Override
+            public void connectionCreated(XMPPLLConnection connection) {
+                System.out.println("XMPPLLConnection created to " + connection.getConnectionID());
+            }
+        });
+
+        mService.addPacketListener(new PacketListener() {
+            @Override
+            public void processPacket(Packet packet) throws SmackException.NotConnectedException {
+                System.out.println("Got packet " + packet.toString());
+            }
+        }, new PacketFilter() {
+            @Override
+            public boolean accept(Packet packet) {
+                return true;
+            }
+        });
+    }
+
+
+    /**
+     * Attaches a LLPresence Listener to the JmDNS Service and
+     * sends Messages to each client as they become available on the network.
+     */
+    public void messageAvailableClients() {
+        mService.addPresenceListener(new LLPresenceListener() {
+            @Override
+            public void presenceNew(LLPresence presence) {
+                if (!presence.getServiceName().equals(mService.getLocalPresence().getServiceName())) {
+                    System.out.println("new peer presence! " + presence.getServiceName());
+                    // If it isn't our own client presence, make first contact
+                    try {
+                        LLChat chat = mService.getChat(presence.getServiceName());
+                        chat.sendMessage("Hey!");
+                        chat.addMessageListener(new LLMessageListener() {
+
+                            @Override
+                            public void processMessage(LLChat chat, Message message) {
+                                System.out.println("Received response from " + chat.getServiceName() + " " + message.getBody());
+                            }
+                        });
+                    } catch (XMPPException | IOException | SmackException e) {
+                        e.printStackTrace();
+                        System.out.println("Error sending chat to " + presence.getServiceName());
+                    }
+                } else {
+                    System.out.println("Presence equals local presence service name. Ignoring. jid: " + presence.getJID());
                 }
             }
 
@@ -97,11 +206,6 @@ public class LLXMPPClient {
                 System.out.println("removed presence! " + presence);
             }
         });
-        if (VERBOSE) System.out.println("Broadcasting XEP-0174 presence " + serviceName);
-        if (VERBOSE) System.out.println("Waiting for other clients...");
-
-
-        mState = STATE.PRESENT;
     }
 
     /**
@@ -140,5 +244,16 @@ public class LLXMPPClient {
         mService.close();
 
         mState = STATE.UNINITIALIZED;
+    }
+
+    /**
+     * Stop the mDNS Service.
+     */
+    public void shutdown() {
+        try {
+            mService.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
